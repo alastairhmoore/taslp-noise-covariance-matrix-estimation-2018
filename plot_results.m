@@ -1,5 +1,5 @@
 
-data_dir = '~/rsynced_data/20180906_ncm_estimation_published';
+data_dir = 'saved_results';
 graphics_dir = fullfile(data_dir,'graphics');
 
 scale_factor=2;

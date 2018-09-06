@@ -1,10 +1,7 @@
 % function handles for estimation methods
 sph_iso_fcn = @fcn_20170822_04_sph_iso_model;
 recursive_smooth_fcn = @fcn_20170905_02_est_Rx_recursive_with_mask;
-%ewls_fcn = @fcn_20180326_01_ewls_ncm_est;
 ewls_fcn = @fcn_20180327_01_ewls_ncm_est;
-%ewls_fcn = @fcn_20171122_01_est_Rx_rls_model_combined_update
-
 
 % get random seeds
 rng(GLOBAL_SEED,'twister');
@@ -40,19 +37,12 @@ for ifield = nFields:-1:1
     fprintf('\n\nProcessing field %d/%d\n\n', nFields-ifield+1, nFields);
         
     for itest = nTests:-1:1
-        
-
-        %         rot_var.yaw = deg2rad(0);
-        %         rot_var.pitch = deg2rad(0);
-        %         rot_var.roll = deg2rad(0);
         rot_var = [];
         nFramesPerSegment = 10;
         
         pose.yaw = reshape(repmat(yaw_full_set(:,itest).',nFramesPerPose,1),[],1);
         pose.pitch = reshape(repmat(pitch_full_set(:,itest).',nFramesPerPose,1),[],1);
         pose.roll = reshape(repmat(roll_full_set(:,itest).',nFramesPerPose,1),[],1);
-        
-        
         
         %% make the data
         this_fnm = fnm(:,ifield);
@@ -134,7 +124,7 @@ for ifield = nFields:-1:1
         for ii = nMethods:-1:1
             imethod = methods_to_run(ii);
             
-            %% estimate the data
+            %% do the estimation - some methods below are the same but with different parameter values
             switch imethod
                 case 1
                     est(ifield,itest,ii).legend_lab = sprintf('gt');
@@ -318,8 +308,6 @@ for ifield = nFields:-1:1
     end
 end
 
-% data_out_dir = '~/rsynced_data/20171120_rls_noise_estimation';
-% check_output_dir_exists(data_out_dir);
 save(sprintf('%s/dat_%s.mat',data_out_dir,scr_id),...
     '-v7.3','est','saved_gt')
 

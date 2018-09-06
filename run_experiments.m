@@ -12,7 +12,7 @@ restoredefaultpath
 %% add paths
 addpath(genpath('dependencies'))
 
-data_out_dir = '~/rsynced_data/20180906_ncm_estimation_published';
+data_out_dir = 'saved_results';
 check_output_dir_exists(data_out_dir);
 
 %% universal constants
