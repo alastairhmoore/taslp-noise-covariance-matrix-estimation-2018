@@ -1,6 +1,8 @@
 # sap-taslp-noise-covariance-matrix-estimation-2018
 Supporting code to reproduce results of "Noise Covariance Matrix Estimation for Rotating Microphone Arrays".
 
+[![DOI](https://zenodo.org/badge/147680376.svg)](https://zenodo.org/badge/latestdoi/147680376)
+
 This code is published as-is in the hope that it will be useful in understanding and reproducing the published results. It is not a toolbox and is not documented as such.
 
 It has been tested on macOS 10.12 with Matlab2017b.
