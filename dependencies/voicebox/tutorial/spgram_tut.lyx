@@ -1,0 +1,1797 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\date{}
+% force pdfs to use scalable fonts
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+% put line breaks in urls where needed
+\usepackage{url}
+%% Uncomment the two lines below for SVN
+\def\SVNXrev$#1 #2 #3 #4${#3}
+\def\SVNXdat$#1 #2 #3 #4-#5-#6 #7${#6/#5/#4}
+\newcommand{\SVNrevision}{\SVNXrev$Id: spgram_tut.lyx 1639 2012-03-15 19:51:27Z dmb $}
+\newcommand{\SVNdate}{\SVNXdat$Id: spgram_tut.lyx 1639 2012-03-15 19:51:27Z dmb $}
+\end_preamble
+\options mode=present,style=fyma,display=slides
+\use_default_options false
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\paperwidth 30cm
+\paperheight 21cm
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\headheight 1cm
+\headsep 1cm
+\footskip 1cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+spgrambw: Plot Spectrograms in MATLAB
+\end_layout
+
+\begin_layout Author
+Mike Brookes
+\end_layout
+
+\begin_layout Standard
+\align center
+Version: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+SVNrevision
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+SVNdate
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+This document describes the spgrambw function which is part of the voicebox
+ toolbox available at 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.ee.ic.ac.uk/hp/staff/dmb/voicebox/voicebox.html
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Brookes1997"
+
+\end_inset
+
+.
+ We will use as an example, the following sentence 
+\begin_inset Quotes eld
+\end_inset
+
+Six plus three equals nine
+\begin_inset Quotes erd
+\end_inset
+
+ for which a spectrogram is shown below inculding the speech waveform and
+ a time-aligned phonetic annotation.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename spgrambw_tut1.emf
+	lyxscale 20
+	width 15cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Function call
+\end_layout
+
+\begin_layout Standard
+The basic call to the function is:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+[T,F,B]=spgrambw(S,FS,MODE,BW,FMAX,DB,TINC,ANN)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where all but the first two input arguments are optional.
+ The input arguments are:
+\end_layout
+
+\begin_layout Description
+S input speech waveform
+\end_layout
+
+\begin_layout Description
+FS sample rate of speech waveform
+\end_layout
+
+\begin_layout Description
+MODE text string specifying a large range of options
+\end_layout
+
+\begin_layout Description
+BW the bandwidth of the spectrogram.
+ This argument determines the tradeoff between time and frequency resolution.
+\end_layout
+
+\begin_layout Description
+FMAX specifies the range and resolution of the frequency axis
+\end_layout
+
+\begin_layout Description
+DB specifies the range of power spectral density displayed
+\end_layout
+
+\begin_layout Description
+TINC specifies the range and resolution of the time axis
+\end_layout
+
+\begin_layout Description
+ANN gives an optional annotation file containing words or phonemes.
+\end_layout
+
+\begin_layout Standard
+If all you want to do is draw a spectrogram, then the function should be
+ called without any output arguments.
+ If output arguments are specified, then no spectrogram will be drawn unless
+ the 'g' mode option is also given.
+ The output arguments are
+\end_layout
+
+\begin_layout Description
+T gives the time of each time-axis sample point
+\end_layout
+
+\begin_layout Description
+F gives the frequency of each frequency-axis sample point
+\end_layout
+
+\begin_layout Description
+B a 2-dimensional array giving the spectral density at each time-frequency
+ point.
+\end_layout
+
+\begin_layout Standard
+In the plots shown in this document, the title (above the spectrogram) shows
+ the figure number (written {n} in the text), the value of the MODE argument
+ and the value of any other arguments that are not null.
+\end_layout
+
+\begin_layout Section
+Colour maps
+\end_layout
+
+\begin_layout Standard
+The default output is a monochrome spectrogram shown as {2}.
+ Specifying the `j' mode option uses the 
+\begin_inset Quotes eld
+\end_inset
+
+jet
+\begin_inset Quotes erd
+\end_inset
+
+ colourmap instead which is colourful and intuitive {3}.
+ However it does not reproduce accurately if viewed or printed in monochrome
+ and so I normally use the `J' option instead which is less aggressive and
+ converts accurately to monochrome {4}.
+ Notice that I have also used the `c' option in each case in order to include
+ a colourbar giving the intensity scale in decibels.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut2.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut3.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut4.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2: Monochrome
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3: `j'=Jet
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4: `J'=Thermal
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Adding the `i' option inverts the colour map so that dark areas now correspond
+ to high intensity.
+ For these examples, I have omitted the `c' option so the colourbar is missing.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut5.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut6.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut7.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5: `i'= Inverted Monochrome
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6: `ij'=Inverted Jet
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7: `iJ'=Inverted Thermal
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Frequency axis
+\end_layout
+
+\begin_layout Subsection
+Nonlinear frequency scaling
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Nonlinear-frequency-scaling"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The default frequency axis is linear in Hz as seen in the examples above.
+ Speech scientists usually prefer a nonlinear frequency scale in which high
+ frequencies are compressed.
+ There are several widely used frequency scales and these are plotted below
+ (scaled to coincide at 1
+\begin_inset space ~
+\end_inset
+
+kHz) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Moore1983,Ghitza1994,Stevens1937,Zwicker1961,Zwicker1980"
+
+\end_inset
+
+.
+ The log scale {8} provides the most compression at high frequencies but
+ it is more usual to use one of the physiological or psychoacoustical scales:
+ Erb-rate {9}, Mel {10} or Bark {11}.
+ The scale is selected by the MODE options `l', `e', `m' or `b'.
+ In all cases, it is possible to add also the `f' option which causes the
+ frequency axis labels to be written in Hz as in {12}.
+ In all the plots below, I have reduced the bandwidth to 80
+\begin_inset space ~
+\end_inset
+
+Hz (see section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Analysis-bandwidth"
+
+\end_inset
+
+) to give better frequency resolution.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut201.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut8.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut9.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Frequency scales
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8: `l' = Log scaled
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+9: `e' = Erb-rate scaled
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut10.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut11.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut12.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10: `m' = Mel scaled
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+11: `b' = Bark scaled
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12: `bf' = Bark + Hz labels
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Frequency range and stepsize
+\end_layout
+
+\begin_layout Standard
+By default the frequency axis encompasses the entire range from 0
+\begin_inset space ~
+\end_inset
+
+Hz to the Nyquist frequency, 
+\begin_inset Formula $\frac{1}{2}f_{s}$
+\end_inset
+
+, but this is often too large.
+ The FMAX input parameter allows you to specify the desired frequency range.
+ Setting FMAX=4000 {13} restricts the frequency range to a maximum of 4
+\begin_inset space ~
+\end_inset
+
+kHz while FMAX=[2000 4000] sets the range to 2
+\begin_inset space ~
+\end_inset
+
+kHz to 4
+\begin_inset space ~
+\end_inset
+
+kHz {14}.
+ Normally the frequency stepsize is 
+\begin_inset Formula $\frac{1}{256}$
+\end_inset
+
+ of the displayed range, but you can also specify the stepsize explicitly:
+ FMAX=[2000 200 4000] goes from 2
+\begin_inset space ~
+\end_inset
+
+kHz to 4
+\begin_inset space ~
+\end_inset
+
+kHz in steps of 200
+\begin_inset space ~
+\end_inset
+
+Hz {15}.
+ If a nonlinear frequency scaling has been selected by the `l', `e', `m'
+ or `b' options, then FMAX must be specified in scaled units unless the
+ `h' option is given, in which case they are in Hz as normal.
+ Note that selecting a very small step size does not make the spectrogram
+ any less blurry; the frequency resoulution is determined by the analysis
+ bandwidth, BW, described in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Analysis-bandwidth"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut13.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut14.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut15.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13: 0 to 4 
+\begin_inset space ~
+\end_inset
+
+kHz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+14: 2 to 4
+\begin_inset space ~
+\end_inset
+
+kHz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+15: 200 Hz resolution
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Analysis bandwidth
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Analysis-bandwidth"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There is an unavoidable tradeoff between time resolution and frequency resolutio
+n that is often known as the 
+\begin_inset Quotes eld
+\end_inset
+
+uncertainty principle
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The BW input parameter specifies the 
+\begin_inset Formula $-6\,\mbox{dB}$
+\end_inset
+
+ analysis bandwidth which is the frequency separation at which two tones
+ will definitely give distinct peaks.
+ From the point of view of frequency resolution, it follows that the smaller
+ BW the better.
+ However selecting a small value of BW means that rapid amplitude variations
+ within any single frequency bin will be attenuated and, in particular,
+ amplitude variations faster than 
+\begin_inset Formula $\frac{1}{2}\mbox{BW}$
+\end_inset
+
+ will be attenuated by more than 
+\begin_inset Formula $-6\,\mbox{dB}$
+\end_inset
+
+ resulting in poor time resolution.
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut16.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut17.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut18.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16: BW=50 Hz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17: BW=200 Hz (default)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+18: BW=400 Hz
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this speech example, which is by a female talker, the larynx frequency
+ varies from 300
+\begin_inset space ~
+\end_inset
+
+Hz down to 150
+\begin_inset space ~
+\end_inset
+
+Hz.
+ If BW is chosen to be below the fundamental frequency, e.g.
+ BW=50
+\begin_inset space ~
+\end_inset
+
+Hz in {16}, the harmonics of the larynx frequency are clearly visible as
+ quasi-horizontal stripes, however the time resolution is relatively poor.
+ In a broadband spectrogram, in contrast, the bandwidth is chosen to be
+ higher than the larynx frequency, e.g.
+ BW=400
+\begin_inset space ~
+\end_inset
+
+Hz in {18}, and the individual harmonics are no longer resolved.
+ The time resolution is however much improved and it is possible to resolve
+ the individual acoustic excitations arising from each larynx pulse; these
+ are visible as vertical striations during the /aI/ phoneme of 
+\begin_inset Quotes eld
+\end_inset
+
+nine
+\begin_inset Quotes erd
+\end_inset
+
+ at a time of around 1.5 seconds.
+ The default bandwidth is BW=200
+\begin_inset space ~
+\end_inset
+
+Hz {17} which is often too large to reslve the larynx frequency harmonics
+ but which makes the vocal tract resonances, or formants, easy to see.
+\end_layout
+
+\begin_layout Section
+Time Axis
+\end_layout
+
+\begin_layout Standard
+As discussed in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Analysis-bandwidth"
+
+\end_inset
+
+, the time resolution is determined by the BW parameter, and modulation
+ frequencies above 
+\begin_inset Formula $\frac{1}{2}\mbox{BW}$
+\end_inset
+
+ are not shown in the spectrogram.
+ For this reason, the default time-step is taken as 
+\begin_inset Formula $\frac{0.45}{\mbox{BW}}$
+\end_inset
+
+ and, for small values of BW, this may give a blocky appearance {19}.
+ To avoid this you can explicitly set a smaller time step using the TINC
+ parameter as shown in {20}; note that although this results in a smoother
+ appearance, it does not improve the time resolution which is still determined
+ by the BW parameter (see section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Analysis-bandwidth"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut19.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut20.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut21.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+19: BW=20 Hz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+20: BW=20, TINC=0.005 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+21: TINC=[1.1 0.001 1.4]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can restrict the display to a specific time interval by setting 
+\begin_inset Formula $\mbox{TINC}=[t_{min}\, t_{max}]$
+\end_inset
+
+ or 
+\begin_inset Formula $\mbox{TINC}=[t_{min}\, t_{step}\, t_{max}]$
+\end_inset
+
+ if you want to specifiy the time-step as well {21}.
+ Notice in {21} that the waveform and annotations remain correctly aligned.
+\end_layout
+
+\begin_layout Standard
+The sample time of 
+\begin_inset Formula $S(1)$
+\end_inset
+
+ is assumed by default to be 
+\begin_inset Formula $T1=\frac{1}{FS}$
+\end_inset
+
+, but you can set it to any other value by making the second input argument
+ a vector: [FS T1].
+\end_layout
+
+\begin_layout Section
+Intensity scaling
+\end_layout
+
+\begin_layout Standard
+The default spectrogram shows the spectral density in units of 
+\begin_inset Quotes eld
+\end_inset
+
+power per Hz
+\begin_inset Quotes erd
+\end_inset
+
+ {22}.
+ Because most speech energy is concentrated at low frequencies, this can
+ make it difficult to see detail in the display at both low and high frequencies.
+ To avoid this, you can use the `p' option to display 
+\begin_inset Quotes eld
+\end_inset
+
+power per decade
+\begin_inset Quotes erd
+\end_inset
+
+ instead: this option multiplies the power by a value proportional to the
+ frequency and so emphasises high frequencies {23}.
+ If you are using one of the non-linear frequency scaling options described
+ in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Nonlinear-frequency-scaling"
+
+\end_inset
+
+, you have a third option which is to show 
+\begin_inset Quotes eld
+\end_inset
+
+power per bark/erb/...
+\begin_inset Quotes erd
+\end_inset
+
+ {24}.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut22.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut23.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut24.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+22: Power/Hz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+23: `p'=Power/Decade 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+24: `P'=Power per Bark
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Normally, the display shows a range of 40
+\begin_inset space ~
+\end_inset
+
+dB from the maximum power anywhere in the spectrrogram {25}.
+ You can change this to a different range by setting the DB parameter either
+ to the desired range{26} or alternatively to the minimum and maximum powers
+ to display: 
+\begin_inset Formula $\mbox{DB}=[P_{min}\, P_{max}]$
+\end_inset
+
+ {27}.
+ This option is especially useful if you want to have several spectriograms
+ with identical displayed power ranges.
+ Values outside the selected range will be set to either the minimum or
+ maximum.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut25.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut26.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut27.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+25: 40 dB range (default)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+26: DB=60 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+27: DB=[-25 0]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Waveform and transcription
+\end_layout
+
+\begin_layout Standard
+It is often helpful to display the time-domain waveform on the spectrogram
+ and you can do so with th `w' option {25}.
+ If you have a transcription or other time-aligned annotation, you can specify
+ it as the ANN input.
+ Each row of the ANN cell array is of the form 
+\begin_inset Formula $\{[t_{start}\, t_{end}]\;`\mbox{text'}\}$
+\end_inset
+
+.
+ By default, the annotations are left-aligned within their time intervals
+ without any time markers {26}.
+ If you want to display phonetic characters, you will need to install a
+ non-unicode IPA font such as the SIL93 fonts (available for download from
+ the Voicebox website).
+ You can specify the font of each annotation entry by including a third
+ column; each row of ANN is now of the form 
+\begin_inset Formula $\{[t_{start}\, t_{end}]\;`\mbox{text' `font'}\}$
+\end_inset
+
+.
+ Example {27} uses the 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+\lang english
+`SILDoulos IPA93'
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+\lang british
+ font and also includes the options `a' which centres the annotations in
+ their time interval and `t' which includes time markers.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut28.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut29.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename spgrambw_tut30.emf
+	lyxscale 20
+	width 5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+25: 'w'=show waveform
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+26: ANN input 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+27: `wat' + ANN font
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Output Arguments
+\end_layout
+
+\begin_layout Standard
+Specifying output arguments normally suppresses the spectrogram plot unless
+ the `g' option is given.
+ Note that, perhaps unexpectedly, the spectrogram array is the third output
+ rather than the first.
+\end_layout
+
+\begin_layout Standard
+If you save the B output (with a linear frequency scale and without the
+ `p' or `P' options), you can use it as the input to a subsequent call to
+ spgrambw instead of a time-domain waveform.
+ In this case FS=[FS T1 FINC F1] where FS is now the frame rate (each frame
+ is one row of B), T1 is the time of the first row of B, FINC is the frequency
+ increment and F1 is the frequency of the first column in B.
+\end_layout
+
+\begin_layout Section
+MODE string options
+\end_layout
+
+\begin_layout Description
+a centre-align annotations rather than left-aligning them
+\end_layout
+
+\begin_layout Description
+b bark scale
+\end_layout
+
+\begin_layout Description
+c include a colourbar as an intensity scale
+\end_layout
+
+\begin_layout Description
+d give the 
+\series bold
+B
+\series default
+ ouput in decibels rather than in power.
+\end_layout
+
+\begin_layout Description
+D clip the output B array to the limits specified by the "db" input
+\end_layout
+
+\begin_layout Description
+e erb scale]
+\end_layout
+
+\begin_layout Description
+f label frequency axis in Hz rather than mel/bark/...
+ 
+\end_layout
+
+\begin_layout Description
+g draw a graph even if output arguments are present
+\end_layout
+
+\begin_layout Description
+h units of the FMAX input are in Hz instead of mel/bark/...
+ In this case, the Fstep parameter is used only to determine the number
+ of filters.
+\end_layout
+
+\begin_layout Description
+H express the F output in Hz instead of mel/bark/...
+\end_layout
+
+\begin_layout Description
+i inverted colourmap" (white background)
+\end_layout
+
+\begin_layout Description
+j jet colourmap
+\end_layout
+
+\begin_layout Description
+J 
+\begin_inset Quotes eld
+\end_inset
+
+thermal
+\begin_inset Quotes erd
+\end_inset
+
+ colourmap that is linear in grayscale.
+ Based on Oliver Woodford's % real2rgb at http://www.mathworks.com/matlabcentral/f
+ileexchange/23342
+\end_layout
+
+\begin_layout Description
+l log10 Hz frequency scale
+\end_layout
+
+\begin_layout Description
+m mel scale
+\end_layout
+
+\begin_layout Description
+p calculate 
+\begin_inset Quotes eld
+\end_inset
+
+power per decade
+\begin_inset Quotes erd
+\end_inset
+
+ rather than 
+\begin_inset Quotes eld
+\end_inset
+
+power per Hz
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This effectively increases the power level at high frequencies and so maes
+ them more visible
+\end_layout
+
+\begin_layout Description
+P calculate 
+\begin_inset Quotes eld
+\end_inset
+
+power per erb/mel/...
+\begin_inset Quotes erd
+\end_inset
+
+ rather than power per Hz.
+\end_layout
+
+\begin_layout Description
+t add time markers with annotations
+\end_layout
+
+\begin_layout Description
+w draw the speech waveform above the spectrogram
+\end_layout
+
+\begin_layout Section
+MATLAB Code for figures
+\end_layout
+
+\begin_layout Standard
+The following code was used to generate all the figures in this document:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "spgrambw_tut.m"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "C:/work/refs/bib/dmb"
+options "IEEEtranSA"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
